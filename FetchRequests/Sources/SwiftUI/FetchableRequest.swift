@@ -74,7 +74,17 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         animation: Animation? = nil
     ) {
         let controller = FetchedResultsController(
-            definition: definition,
+            definition: FetchDefinition<FetchedObject>(
+                request:{ completion in
+                    DispatchQueue.main.async {
+                        definition.request(completion)
+                    }
+                },
+                objectCreationToken: definition.objectCreationToken,
+                creationInclusionCheck: definition.creationInclusionCheck,
+                associations: definition.associations,
+                dataResetTokens: definition.dataResetTokens)
+            ,
             sortDescriptors: sortDescriptors,
             debounceInsertsAndReloads: debounceInsertsAndReloads
         )
